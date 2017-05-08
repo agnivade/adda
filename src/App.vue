@@ -1,6 +1,12 @@
 <template>
   <div id="app">
-    <img src="./assets/logo.png">
+  <mu-appbar title="adda" class="appbar" :zDepth="2">
+    <mu-avatar slot="right" icon="account_circle"/>
+    <mu-icon-menu icon="more_vert" slot="right">
+    </mu-icon-menu>
+  </mu-appbar>
+    <div class="empty-space">
+    </div>
     <router-view></router-view>
   </div>
 </template>
@@ -15,5 +21,11 @@ export default {
 #app {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+.appbar {
+  position: fixed;
+}
+.empty-space {
+  height: 5rem;
 }
 </style>
