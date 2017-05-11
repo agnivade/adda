@@ -8,10 +8,14 @@
   </mu-appbar>
   <div class="empty-space">
   </div>
-  <mu-drawer :open="drawerOpen" class="drawer">
+  <mu-drawer class="drawer" :open="drawerOpen" :zDepth="0">
     <mu-list @itemClick="">
-      <mu-list-item title="Home"/>
-      <mu-list-item title="Following"/>
+      <mu-list-item title="Home">
+        <mu-icon slot="left" value="home"/>
+      </mu-list-item>
+      <mu-list-item title="Following">
+        <mu-icon slot="left" value="turned_in"/>
+      </mu-list-item>
     </mu-list>
   </mu-drawer>
   <div class="data-container" v-bind:class="{ 'container-open': !drawerOpen }">
@@ -49,10 +53,10 @@ export default {
 }
 .drawer {
   top:64px;
-  width: 15rem;
+  width: 20rem;
 }
 .data-container {
-  margin-left: 15rem;
+  margin-left: 20rem;
   padding: 0 6rem;
   transition: margin-left 0.45s;
 }
