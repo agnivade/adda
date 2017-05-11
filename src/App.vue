@@ -16,6 +16,10 @@
       <mu-list-item title="Following">
         <mu-icon slot="left" value="turned_in"/>
       </mu-list-item>
+      <mu-divider />
+      <mu-list-item title="General">
+        <mu-icon slot="left" value="label"/>
+      </mu-list-item>
     </mu-list>
   </mu-drawer>
   <div class="data-container" v-bind:class="{ 'container-open': !drawerOpen }">
