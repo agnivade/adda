@@ -2,6 +2,7 @@ var path = require('path')
 var utils = require('./utils')
 var config = require('../config')
 var vueLoaderConfig = require('./vue-loader.conf')
+var webpack = require('webpack')
 
 function resolve (dir) {
   return path.join(__dirname, '..', dir)
@@ -63,5 +64,13 @@ module.exports = {
         }
       }
     ]
-  }
+  },
+  plugins: [
+    new webpack.DefinePlugin({
+      'process.firebaseApiKey': JSON.stringify(process.env.FIREBASE_API_KEY),
+      'process.firebaseAuthDomain': JSON.stringify(process.env.FIREBASE_AUTH_DOMAIN),
+      'process.firebaseDatabaseUrl': JSON.stringify(process.env.FIREBASE_DATABASE_URL),
+      'process.firebaseProjectId': JSON.stringify(process.env.FIREBASE_PROJECT_ID)
+    })
+  ]
 }
