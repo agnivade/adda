@@ -1,4 +1,5 @@
 import Vue from 'vue'
+import Router from 'vue-router'
 
 // importing firebase
 import VueFire from 'vuefire'
@@ -12,10 +13,11 @@ import 'muse-ui/dist/muse-ui.css'
 import 'muse-ui/dist/theme-carbon.css'
 
 import App from './App'
-import router from './router'
+import router from './routes'
 
 Vue.use(MuseUI)
 Vue.use(VueFire)
+Vue.use(Router)
 
 Vue.config.productionTip = false
 
