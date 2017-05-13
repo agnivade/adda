@@ -65,7 +65,11 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+$drawerWidth: 20rem;
+$appbarHeight: 64px;
+$containerPadding: 6rem;
+
 #app {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -77,16 +81,16 @@ export default {
   height: 5rem;
 }
 .drawer {
-  top:64px;
-  width: 20rem;
+  top:$appbarHeight;
+  width: $drawerWidth;
 }
 .data-container {
-  margin-left: 20rem;
-  padding: 0 6rem;
+  margin-left: $drawerWidth;
+  padding: 0 $containerPadding;
   transition: margin-left 0.45s;
 }
 .container-open {
   margin-left: 0rem;
-  padding: 0 5rem;
+  padding: 0 $containerPadding - 1;
 }
 </style>
