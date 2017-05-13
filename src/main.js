@@ -23,17 +23,23 @@ Vue.use(Router)
 Vue.config.productionTip = false
 
 // Initializing firebase config
-firebase.initializeApp({
+let firebaseApp = firebase.initializeApp({
   apiKey: process.firebaseApiKey,
   authDomain: process.firebaseAuthDomain,
   databaseURL: process.firebaseDatabaseUrl,
   projectId: process.firebaseProjectId
 })
+let db = firebaseApp.database()
 
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
   router,
   store,
-  render: h => h(App)
+  render: h => h(App),
+  firebase: {
+    tags: db.ref('tags'),
+    threads: db.ref('threads'),
+    messages: db.ref('messages')
+  }
 })

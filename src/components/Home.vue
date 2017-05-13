@@ -1,24 +1,39 @@
 <template>
   <div>
     <h1>Welcome to adda !</h1>
-    <mu-float-button secondary icon="add" class="addBtn" @click="openDialog()" />
+    <mu-float-button secondary icon="add" class="addBtn" @click="openDialog" />
 
-    <mu-dialog :open="dialogOpen" title="New thread" >
-      Select tags
-      <br />
-      Put a markdown editor here
+    <mu-dialog :open="dialogOpen" title="New Thread" @close="dialogOpen=false">
+      <mu-chip v-for="tag in tags" :key="tag" showDelete @delete="removeTag(tag)">
+        {{tag}}
+      </mu-chip>
+      <mu-auto-complete
+        ref="autoComplete"
+        class="autoComplete"
+        hintText="Tags"
+        :dataSource="autoCompleteTags"
+        :underlineShow="false"
+        @focus="autoCompleteFocussed=true"
+        @blur="autoCompleteFocussed=false"
+        @select="itemSelected"
+        @input="onAutoCompleteChange"
+      />
+      <hr class="mu-text-field-line">
+      <hr class="mu-text-field-focus-line" :class="{'focus' : autoCompleteFocussed}">
+      <mu-text-field hintText="Title" fullWidth />
+      <mu-text-field hintText="Message" fullWidth multiLine :rows="6" :rowsMax="6"/>
 
       <template v-if="userLoggedIn">
-        <mu-raised-button slot="actions" label="Cancel" @click="closeDialog()" />
-        <mu-raised-button slot="actions" primary label="Post" @click="createThread()" />
+        <mu-flat-button slot="actions" :style="{marginRight: '1rem'}" label="Cancel" @click="closeDialog" />
+        <mu-raised-button slot="actions" primary label="Post" @click="createThread" :disabled="postButtonDisabled" />
       </template>
       <template v-else>
-        <mu-raised-button slot="actions" label="Cancel" @click="closeDialog()" />
-        <mu-raised-button slot="actions" label="Sign In" @click="signIn()" />
+        <mu-raised-button slot="actions" label="Cancel" @click="closeDialog" />
+        <mu-raised-button slot="actions" label="Sign In" @click="signIn" />
       </template>
     </mu-dialog>
 
-    <mu-snackbar v-if="snackbarOpen" v-bind:message="snackbarText" action="OK" @actionClick="hideSnackbar()" @close="hideSnackbar()"/>
+    <mu-snackbar v-if="snackbarOpen" :message="snackbarText" action="OK" @actionClick="hideSnackbar" @close="hideSnackbar"/>
   </div>
 </template>
 
@@ -32,7 +47,11 @@ export default {
     return {
       dialogOpen: false,
       snackbarOpen: false,
-      snackbarText: ''
+      snackbarText: '',
+      autoCompleteFocussed: false,
+      autoCompleteTags: ['general', 'dev', 'sales', 'ops'],
+      tags: [],
+      postButtonDisabled: false
     }
   },
   computed: mapState([
@@ -40,6 +59,7 @@ export default {
     'userLoggedIn'
   ]),
   methods: {
+    // XXX: Maybe convert these to inline functions
     openDialog () {
       this.dialogOpen = true
     },
@@ -48,15 +68,44 @@ export default {
     },
     createThread () {
       // disable button
+      console.log(this.$firebaseRefs)
+      // this.postButtonDisabled = true
 
       // post to firebase
 
       // on success, enable the button
-      this.dialogOpen = false
+      // this.dialogOpen = false
     },
     hideSnackbar () {
       this.snackbarOpen = false
       this.snackbarText = ''
+    },
+    showSnackbar (msg) {
+      this.snackbarText = msg
+      this.snackbarOpen = true
+    },
+    itemSelected (tag) {
+      this.tags.push(tag)
+      this.putFocus()
+    },
+    onAutoCompleteChange (val) {
+      if (val.endsWith(' ')) {
+        this.tags.push(val.trim())
+        this.putFocus()
+      }
+    },
+    // We need to apply focus after the dom has re-rendered
+    // Hence running it on nextTick
+    putFocus () {
+      this.$nextTick(() => {
+        // A hack for now
+        // Refer - https://github.com/museui/muse-ui/issues/495
+        this.$refs.autoComplete.$el.getElementsByTagName('input')[0].focus()
+      })
+    },
+    removeTag (tag) {
+      let index = this.tags.indexOf(tag)
+      this.tags.splice(index, 1)
     },
     signIn () {
       let provider = new firebase.auth.GoogleAuthProvider()
@@ -65,23 +114,13 @@ export default {
         this.$store.commit('loginUser', result.user)
       }).catch((error) => {
         console.error(error)
-        this.snackbarText = error.message
-        this.snackbarOpen = true
-
-        // Handle Errors here.
-        /* var errorCode = error.code
-        var errorMessage = error.message
-        // The email of the user's account used.
-        var email = error.email
-        // The firebase.auth.AuthCredential type that was used.
-        var credential = error.credential */
+        this.showSnackbar(error.message)
       })
     }
   }
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" scoped>
 $fabBtnMargin: 3rem;
 
@@ -91,4 +130,13 @@ $fabBtnMargin: 3rem;
   right: $fabBtnMargin;
   bottom: $fabBtnMargin;
 }
+
+.autoComplete {
+  height: 4rem;
+}
+
+.mu-text-field-line, .mu-text-field-focus-line {
+  position: relative;
+}
 </style>
+

@@ -1,7 +1,7 @@
 <template>
   <div id="app">
   <mu-appbar title="adda" class="appbar" :zDepth="2">
-    <mu-icon-button icon="menu" slot="left" @click="toggleDrawer()" />
+    <mu-icon-button icon="menu" slot="left" @click="toggleDrawer" />
     <mu-avatar v-if="userLoggedIn" slot="right" :src="userData.photoURL" />
     <mu-avatar v-else slot="right" icon="account_circle"/>
     <mu-icon-menu icon="more_vert" slot="right">
@@ -23,7 +23,7 @@
       </mu-list-item>
     </mu-list>
   </mu-drawer>
-  <div class="data-container" v-bind:class="{ 'container-open': !drawerOpen }">
+  <div class="data-container" :class="{ 'container-open': !drawerOpen }">
     <router-view></router-view>
   </div>
   </div>
