@@ -8,7 +8,7 @@
       <br />
       Put a markdown editor here
 
-      <template v-if="userSignedIn">
+      <template v-if="userLoggedIn">
         <mu-raised-button slot="actions" label="Cancel" @click="closeDialog()" />
         <mu-raised-button slot="actions" primary label="Post" @click="createThread()" />
       </template>
@@ -24,28 +24,21 @@
 
 <script>
 import * as firebase from 'firebase/app'
+import {mapState} from 'vuex'
 
 export default {
   name: 'home',
   data () {
     return {
       dialogOpen: false,
-      userSignedIn: false,
       snackbarOpen: false,
       snackbarText: ''
     }
   },
-  created () {
-    firebase.auth().onAuthStateChanged((user) => {
-      if (user) {
-        // User is signed in.
-        this.userSignedIn = true
-      } else {
-        // User is signed out.
-        this.userSignedIn = false
-      }
-    })
-  },
+  computed: mapState([
+    // maps this.userLoggedIn to $store.state.userLoggedIn
+    'userLoggedIn'
+  ]),
   methods: {
     openDialog () {
       this.dialogOpen = true
@@ -68,12 +61,8 @@ export default {
     signIn () {
       let provider = new firebase.auth.GoogleAuthProvider()
       firebase.auth().signInWithPopup(provider).then((result) => {
-        // This gives you a Google Access Token. You can use it to access the Google API.
-        var token = result.credential.accessToken
         // The signed-in user info.
-        var user = result.user
-        this.userSignedIn = true
-        console.log(token, user)
+        this.$store.commit('loginUser', result.user)
       }).catch((error) => {
         console.error(error)
         this.snackbarText = error.message

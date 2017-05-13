@@ -14,6 +14,7 @@ import 'muse-ui/dist/theme-carbon.css'
 
 import App from './App'
 import router from './routes'
+import store from './store'
 
 Vue.use(MuseUI)
 Vue.use(VueFire)
@@ -33,6 +34,7 @@ firebase.initializeApp({
 new Vue({
   el: '#app',
   router,
+  store,
   template: '<App/>',
   components: { App }
 })
