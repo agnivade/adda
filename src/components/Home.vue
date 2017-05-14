@@ -20,8 +20,8 @@
       />
       <hr class="mu-text-field-line">
       <hr class="mu-text-field-focus-line" :class="{'focus' : autoCompleteFocussed}">
-      <mu-text-field hintText="Title" fullWidth />
-      <mu-text-field hintText="Message" fullWidth multiLine :rows="6" :rowsMax="6"/>
+      <mu-text-field hintText="Title" fullWidth :model='titleText' />
+      <mu-text-field hintText="Message" fullWidth multiLine :model='messageBody' :rows="6" :rowsMax="6"/>
 
       <template v-if="userLoggedIn">
         <mu-flat-button slot="actions" :style="{marginRight: '1rem'}" label="Cancel" @click="closeDialog" />
@@ -51,30 +51,69 @@ export default {
       autoCompleteFocussed: false,
       autoCompleteTags: ['general', 'dev', 'sales', 'ops'],
       tags: [],
-      postButtonDisabled: false
+      postButtonDisabled: false,
+      titleText: '',
+      messageBody: ''
     }
   },
   computed: mapState([
-    // maps this.userLoggedIn to $store.state.userLoggedIn
-    'userLoggedIn'
+    // maps this.<prop> to $store.state.<prop>
+    'userLoggedIn',
+    'firebaseRef'
   ]),
   methods: {
-    // XXX: Maybe convert these to inline functions
     openDialog () {
       this.dialogOpen = true
     },
     closeDialog () {
+      this.clearDialogData()
       this.dialogOpen = false
     },
     createThread () {
       // disable button
-      console.log(this.$firebaseRefs)
-      // this.postButtonDisabled = true
+      this.postButtonDisabled = true
 
-      // post to firebase
+      let rootRef = this.firebaseRef.threads.root
+      let updates = {}
+      let threadId = this.firebaseRef.threads.push().key
+      // Updating tags
+      this.tags.forEach((tag) => {
+        updates['/tags/' + tag] = {}
+        updates['/tags/' + tag][threadId] = true
+      })
+      let currentTime = new Date()
+      // Updating thread
+      updates['threads/' + threadId] = {
+        title: this.titleText,
+        lastMessage: this.messageBody,
+        lastUpdated: currentTime,
+        tags: this.tags
+      }
+      // Updating messages
+      updates['messages/' + threadId] = [{
+        msgBody: 'my message',
+        timestamp: currentTime,
+        stars: 0
+      }]
+      rootRef.update(updates)
+      .then(() => {
+        // on success, enable the button
+        this.postButtonDisabled = false
+        this.showSnackbar('Successfully created the thread')
+        setTimeout(() => {
+          this.hideSnackbar()
+        }, 2000)
+        this.clearDialogData()
+      })
+      .catch(err => {
+        this.postButtonDisabled = false
+        this.showSnackbar(err)
+        this.clearDialogData()
+        console.error(err)
+      })
 
-      // on success, enable the button
-      // this.dialogOpen = false
+      // closing the dialog
+      this.dialogOpen = false
     },
     hideSnackbar () {
       this.snackbarOpen = false
@@ -83,6 +122,11 @@ export default {
     showSnackbar (msg) {
       this.snackbarText = msg
       this.snackbarOpen = true
+    },
+    clearDialogData () {
+      this.tags = []
+      this.titleText = ''
+      this.messageBody = ''
     },
     itemSelected (tag) {
       this.tags.push(tag)

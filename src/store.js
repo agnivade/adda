@@ -6,7 +6,8 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     userLoggedIn: false,
-    userData: {}
+    userData: {},
+    firebaseRef: null
   },
   mutations: {
     loginUser (state, user) {
@@ -16,6 +17,9 @@ export default new Vuex.Store({
     logoutUser (state) {
       state.userLoggedIn = false
       state.userData = {}
+    },
+    setFirebaseRef (state, ref) {
+      state.firebaseRef = ref
     }
   }
 })

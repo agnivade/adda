@@ -2,7 +2,6 @@ import Vue from 'vue'
 import Router from 'vue-router'
 
 // importing firebase
-import VueFire from 'vuefire'
 import * as firebase from 'firebase/app'
 import 'firebase/auth'
 import 'firebase/database'
@@ -17,29 +16,31 @@ import router from './routes'
 import store from './store'
 
 Vue.use(MuseUI)
-Vue.use(VueFire)
 Vue.use(Router)
 
 Vue.config.productionTip = false
 
 // Initializing firebase config
-let firebaseApp = firebase.initializeApp({
+const firebaseApp = firebase.initializeApp({
   apiKey: process.firebaseApiKey,
   authDomain: process.firebaseAuthDomain,
   databaseURL: process.firebaseDatabaseUrl,
   projectId: process.firebaseProjectId
 })
-let db = firebaseApp.database()
+const db = firebaseApp.database()
+
+let firebaseRef = {
+  tags: db.ref('tags'),
+  threads: db.ref('threads'),
+  messages: db.ref('messages')
+}
+// Storing the firebaseRefs inside the store
+store.commit('setFirebaseRef', firebaseRef)
 
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
   router,
   store,
-  render: h => h(App),
-  firebase: {
-    tags: db.ref('tags'),
-    threads: db.ref('threads'),
-    messages: db.ref('messages')
-  }
+  render: h => h(App)
 })
