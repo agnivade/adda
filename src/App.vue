@@ -4,7 +4,10 @@
     <mu-icon-button icon="menu" slot="left" @click="toggleDrawer" />
     <mu-avatar v-if="userLoggedIn" slot="right" :src="userData.photoURL" />
     <mu-avatar v-else slot="right" icon="account_circle"/>
-    <mu-icon-menu icon="more_vert" slot="right">
+    <mu-icon-menu icon="more_vert" slot="right" :anchorOrigin="rightTop"
+      :targetOrigin="rightTop">
+      <mu-menu-item title="Profile" />
+      <mu-menu-item title="Sign out" @click="signOut" />
     </mu-icon-menu>
   </mu-appbar>
   <div class="empty-space">
@@ -37,7 +40,11 @@ export default {
   name: 'app',
   data () {
     return {
-      drawerOpen: true
+      drawerOpen: true,
+      leftTop: {horizontal: 'left', vertical: 'top'},
+      leftBottom: {horizontal: 'left', vertical: 'bottom'},
+      rightBottom: {horizontal: 'right', vertical: 'bottom'},
+      rightTop: {horizontal: 'right', vertical: 'top'}
     }
   },
   created () {
@@ -60,6 +67,13 @@ export default {
   methods: {
     toggleDrawer () {
       this.drawerOpen = !this.drawerOpen
+    },
+    signOut () {
+      firebase.auth().signOut().then(() => {
+        // TODO: show snackbar
+      }).catch((error) => {
+        console.error(error)
+      })
     }
   }
 }

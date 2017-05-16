@@ -11,6 +11,9 @@ import MuseUI from 'muse-ui'
 import 'muse-ui/dist/muse-ui.css'
 import 'muse-ui/dist/theme-carbon.css'
 
+// importing font awesome
+import 'font-awesome/scss/font-awesome.scss'
+
 import App from './App'
 import router from './routes'
 import store from './store'

@@ -33,6 +33,7 @@
 
     <!--TODO: Move this to a separate component -->
     <mu-dialog :open="dialogOpen" title="New Thread" @close="dialogOpen=false">
+    <template v-if="userLoggedIn">
       <mu-chip v-for="tag in tags" :key="tag" showDelete @delete="removeTag(tag)">
         {{tag}}
       </mu-chip>
@@ -66,16 +67,45 @@
         :rowsMax="6"
       />
 
-      <template v-if="userLoggedIn">
-        <mu-flat-button slot="actions" :style="{marginRight: '1rem'}" label="Cancel" @click="closeDialog" />
-        <mu-raised-button slot="actions" primary label="Post" @click="createThread" :disabled="postButtonDisabled" />
-      </template>
-      <template v-else>
-        <mu-raised-button slot="actions" label="Cancel" @click="closeDialog" />
-        <mu-raised-button slot="actions" label="Sign In" @click="signIn" />
-      </template>
+      <mu-flat-button slot="actions" :style="{marginRight: '1rem'}" label="Cancel" @click="closeDialog" />
+      <mu-raised-button slot="actions" primary label="Post" @click="createThread" :disabled="postButtonDisabled" />
+    </template>
+    <template v-else>
+      <div class="signin-buttons">
+      <mu-raised-button
+        label="Sign-in with Google"
+        labelPosition="after"
+        class="login-button"
+        backgroundColor="#ea4335"
+        @click="signIn('google')"
+        fullWidth>
+        <i class="fa fa-google" aria-hidden="true"></i>
+      </mu-raised-button>
+      <mu-raised-button
+        label="Sign-in with Facebook"
+        labelPosition="after"
+        class="login-button"
+        backgroundColor="#3b5998"
+        @click="signIn('facebook')"
+        fullWidth>
+        <i class="fa fa-facebook" aria-hidden="true"></i>
+      </mu-raised-button>
+      <mu-raised-button
+        label="Sign-in with Github"
+        labelPosition="after"
+        class="login-button"
+        backgroundColor="#222222"
+        @click="signIn('github')"
+        fullWidth>
+        <i class="fa fa-github" aria-hidden="true"></i>
+      </mu-raised-button>
+      </div>
+
+      <mu-flat-button slot="actions" :style="{marginRight: '1rem'}" label="Cancel" @click="closeDialog" />
+    </template>
     </mu-dialog>
 
+    <!--TODO: Move this to the main page, storing the text in state -->
     <mu-snackbar v-if="snackbarOpen" :message="snackbarText" action="OK" @actionClick="hideSnackbar" @close="hideSnackbar"/>
   </div>
 </template>
@@ -256,8 +286,15 @@ export default {
       let index = this.tags.indexOf(tag)
       this.tags.splice(index, 1)
     },
-    signIn () {
-      let provider = new firebase.auth.GoogleAuthProvider()
+    signIn (company) {
+      let provider = null
+      if (company === 'google') {
+        provider = new firebase.auth.GoogleAuthProvider()
+      } else if (company === 'facebook') {
+        provider = new firebase.auth.FacebookAuthProvider()
+      } else if (company === 'github') {
+        provider = new firebase.auth.GithubAuthProvider()
+      }
       firebase.auth().signInWithPopup(provider).then((result) => {
         // The signed-in user info.
         this.$store.commit('loginUser', result.user)
@@ -282,6 +319,15 @@ $fabBtnMargin: 3rem;
 
 .autoComplete {
   height: 4rem;
+}
+
+.signin-buttons {
+  width: 50%;
+  margin: 0 auto;
+}
+
+.login-button {
+  margin-bottom: 1rem;
 }
 
 .mu-text-field-line, .mu-text-field-focus-line {
