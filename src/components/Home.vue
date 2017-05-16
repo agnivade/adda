@@ -1,8 +1,37 @@
 <template>
   <div>
     <h1>Welcome to adda !</h1>
+
+    <mu-row gutter>
+      <mu-col width="100" tablet="50" desktop="50">
+        <mu-sub-header>Latest</mu-sub-header>
+        <mu-content-block v-for="item in latestThreadsDesc" :key="item.id">
+          <mu-list-item :title="item.title">
+            <mu-avatar :src="item.userData.photoURL" slot="leftAvatar"/>
+            <span slot="describe">
+              {{item.lastMessage}}
+            </span>
+          </mu-list-item>
+          <mu-divider />
+        </mu-content-block>
+      </mu-col>
+      <mu-col width="100" tablet="50" desktop="50">
+        <mu-sub-header>Top</mu-sub-header>
+        <mu-content-block v-for="item in topThreadsDesc" :key="item.id">
+          <mu-list-item :title="item.title">
+            <mu-avatar :src="item.userData.photoURL" slot="leftAvatar"/>
+            <span slot="describe">
+              {{item.lastMessage}}
+            </span>
+          </mu-list-item>
+          <mu-divider />
+        </mu-content-block>
+      </mu-col>
+    </mu-row>
+
     <mu-float-button secondary icon="add" class="addBtn" @click="openDialog" />
 
+    <!--TODO: Move this to a separate component -->
     <mu-dialog :open="dialogOpen" title="New Thread" @close="dialogOpen=false">
       <mu-chip v-for="tag in tags" :key="tag" showDelete @delete="removeTag(tag)">
         {{tag}}
@@ -13,6 +42,7 @@
         hintText="Tags"
         :dataSource="autoCompleteTags"
         :underlineShow="false"
+        v-model='tagText'
         @focus="autoCompleteFocussed=true"
         @blur="autoCompleteFocussed=false"
         @select="itemSelected"
@@ -20,8 +50,21 @@
       />
       <hr class="mu-text-field-line">
       <hr class="mu-text-field-focus-line" :class="{'focus' : autoCompleteFocussed}">
-      <mu-text-field hintText="Title" fullWidth :model='titleText' />
-      <mu-text-field hintText="Message" fullWidth multiLine :model='messageBody' :rows="6" :rowsMax="6"/>
+      <mu-text-field
+        ref="title"
+        hintText="Title"
+        fullWidth
+        v-model='titleText'
+        @focus='onTitleFocus'
+      />
+      <mu-text-field
+        hintText="Message"
+        fullWidth
+        multiLine
+        v-model='messageBody'
+        :rows="6"
+        :rowsMax="6"
+      />
 
       <template v-if="userLoggedIn">
         <mu-flat-button slot="actions" :style="{marginRight: '1rem'}" label="Cancel" @click="closeDialog" />
@@ -51,16 +94,49 @@ export default {
       autoCompleteFocussed: false,
       autoCompleteTags: ['general', 'dev', 'sales', 'ops'],
       tags: [],
+      tagText: '',
       postButtonDisabled: false,
       titleText: '',
-      messageBody: ''
+      messageBody: '',
+      latestThreads: [],
+      topThreads: []
     }
   },
-  computed: mapState([
-    // maps this.<prop> to $store.state.<prop>
-    'userLoggedIn',
-    'firebaseRef'
-  ]),
+  created () {
+    this.firebaseRef.threads.orderByChild('lastUpdated').limitToFirst(10)
+    .on('child_added', (data) => {
+      this.latestThreads.push({
+        id: data.key,
+        ...data.val()
+      })
+    })
+
+    this.firebaseRef.threads.orderByChild('stars').limitToFirst(10)
+    .on('child_added', (data) => {
+      this.topThreads.push({
+        id: data.key,
+        ...data.val()
+      })
+    })
+  },
+  computed: {
+    latestThreadsDesc () {
+      return this.latestThreads.reverse()
+    },
+    topThreadsDesc () {
+      // Also sorting by numReplies
+      return this.topThreads.sort((a, b) => {
+        return a['numReplies'] > b['numReplies']
+      })
+      .reverse()
+    },
+    ...mapState([
+      // maps this.<prop> to $store.state.<prop>
+      'userLoggedIn',
+      'firebaseRef',
+      'userData'
+    ])
+  },
   methods: {
     openDialog () {
       this.dialogOpen = true
@@ -68,6 +144,16 @@ export default {
     closeDialog () {
       this.clearDialogData()
       this.dialogOpen = false
+    },
+    onTitleFocus () {
+      if (this.tagText) {
+        this.tags.push(this.tagText)
+        this.tagText = ''
+        // Putting the focus back to the title because the DOM is re-rendered
+        this.$nextTick(() => {
+          this.$refs.title.$el.getElementsByTagName('input')[0].focus()
+        })
+      }
     },
     createThread () {
       // disable button
@@ -77,9 +163,8 @@ export default {
       let updates = {}
       let threadId = this.firebaseRef.threads.push().key
       // Updating tags
-      this.tags.forEach((tag) => {
-        updates['/tags/' + tag] = {}
-        updates['/tags/' + tag][threadId] = true
+      let tagPromises = this.tags.map((tag) => {
+        return this.firebaseRef.tags.child(tag).push({threadId})
       })
       let currentTime = new Date()
       // Updating thread
@@ -87,15 +172,33 @@ export default {
         title: this.titleText,
         lastMessage: this.messageBody,
         lastUpdated: currentTime,
-        tags: this.tags
+        createdAt: currentTime,
+        tags: this.tags,
+        stars: 0,
+        numReplies: 1,
+        userData: {
+          displayName: this.userData.displayName,
+          email: this.userData.email,
+          photoURL: this.userData.photoURL,
+          uid: this.userData.uid
+        }
       }
       // Updating messages
       updates['messages/' + threadId] = [{
-        msgBody: 'my message',
+        msgBody: this.messageBody,
         timestamp: currentTime,
-        stars: 0
+        stars: 0,
+        userData: {
+          displayName: this.userData.displayName,
+          email: this.userData.email,
+          photoURL: this.userData.photoURL,
+          uid: this.userData.uid
+        }
       }]
-      rootRef.update(updates)
+      Promise.all([
+        ...tagPromises,
+        rootRef.update(updates)
+      ])
       .then(() => {
         // on success, enable the button
         this.postButtonDisabled = false
@@ -128,13 +231,15 @@ export default {
       this.titleText = ''
       this.messageBody = ''
     },
-    itemSelected (tag) {
-      this.tags.push(tag)
+    itemSelected () {
+      this.tags.push(this.tagText)
+      this.tagText = ''
       this.putFocus()
     },
-    onAutoCompleteChange (val) {
-      if (val.endsWith(' ')) {
-        this.tags.push(val.trim())
+    onAutoCompleteChange () {
+      if (this.tagText.endsWith(' ')) {
+        this.tags.push(this.tagText.trim())
+        this.tagText = ''
         this.putFocus()
       }
     },
