@@ -9,6 +9,7 @@
         ref="autoComplete"
         class="autoComplete"
         hintText="Tags"
+        inputClass="inputField"
         :dataSource="autoCompleteTags"
         :underlineShow="false"
         v-model='tagText'
@@ -255,20 +256,25 @@ $fabBtnMargin: 3rem;
   right: $fabBtnMargin;
   bottom: $fabBtnMargin;
 }
-
-.autoComplete {
-  height: 4rem;
-}
 .signin-buttons {
   width: 50%;
   margin: 0 auto;
 }
-
 .login-button {
   margin-bottom: 1rem;
 }
-
 .mu-text-field-line, .mu-text-field-focus-line {
   position: relative;
 }
+</style>
+
+<!--Have to do an unscoped styling here to apply styles inside the autoComplete -->
+<style lang="scss">
+.autoComplete {
+  height: 4rem;
+  .inputField {
+    width: 50rem;
+  }
+}
+
 </style>
