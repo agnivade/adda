@@ -29,108 +29,25 @@
       </mu-col>
     </mu-row>
 
-    <mu-float-button secondary icon="add" class="addBtn" @click="openDialog" />
-
-    <!--TODO: Move this to a separate component -->
-    <mu-dialog :open="dialogOpen" title="New Thread" @close="dialogOpen=false">
-    <template v-if="userLoggedIn">
-      <mu-chip v-for="tag in tags" :key="tag" showDelete @delete="removeTag(tag)">
-        {{tag}}
-      </mu-chip>
-      <mu-auto-complete
-        ref="autoComplete"
-        class="autoComplete"
-        hintText="Tags"
-        :dataSource="autoCompleteTags"
-        :underlineShow="false"
-        v-model='tagText'
-        @focus="autoCompleteFocussed=true"
-        @blur="autoCompleteFocussed=false"
-        @select="itemSelected"
-        @input="onAutoCompleteChange"
-      />
-      <hr class="mu-text-field-line">
-      <hr class="mu-text-field-focus-line" :class="{'focus' : autoCompleteFocussed}">
-      <mu-text-field
-        ref="title"
-        hintText="Title"
-        fullWidth
-        v-model='titleText'
-        @focus='onTitleFocus'
-      />
-      <mu-text-field
-        hintText="Message"
-        fullWidth
-        multiLine
-        v-model='messageBody'
-        :rows="6"
-        :rowsMax="6"
-      />
-
-      <mu-flat-button slot="actions" :style="{marginRight: '1rem'}" label="Cancel" @click="closeDialog" />
-      <mu-raised-button slot="actions" primary label="Post" @click="createThread" :disabled="postButtonDisabled" />
-    </template>
-    <template v-else>
-      <div class="signin-buttons">
-      <mu-raised-button
-        label="Sign-in with Google"
-        labelPosition="after"
-        class="login-button"
-        backgroundColor="#ea4335"
-        @click="signIn('google')"
-        fullWidth>
-        <i class="fa fa-google" aria-hidden="true"></i>
-      </mu-raised-button>
-      <mu-raised-button
-        label="Sign-in with Facebook"
-        labelPosition="after"
-        class="login-button"
-        backgroundColor="#3b5998"
-        @click="signIn('facebook')"
-        fullWidth>
-        <i class="fa fa-facebook" aria-hidden="true"></i>
-      </mu-raised-button>
-      <mu-raised-button
-        label="Sign-in with Github"
-        labelPosition="after"
-        class="login-button"
-        backgroundColor="#222222"
-        @click="signIn('github')"
-        fullWidth>
-        <i class="fa fa-github" aria-hidden="true"></i>
-      </mu-raised-button>
-      </div>
-
-      <mu-flat-button slot="actions" :style="{marginRight: '1rem'}" label="Cancel" @click="closeDialog" />
-    </template>
-    </mu-dialog>
-
-    <!--TODO: Move this to the main page, storing the text in state -->
-    <mu-snackbar v-if="snackbarOpen" :message="snackbarText" action="OK" @actionClick="hideSnackbar" @close="hideSnackbar"/>
+    <new-thread-dialog />
   </div>
 </template>
 
 <script>
-import * as firebase from 'firebase/app'
 import {mapState} from 'vuex'
+
+import NewThreadDialog from './NewThreadDialog'
 
 export default {
   name: 'home',
   data () {
     return {
-      dialogOpen: false,
-      snackbarOpen: false,
-      snackbarText: '',
-      autoCompleteFocussed: false,
-      autoCompleteTags: ['general', 'dev', 'sales', 'ops'],
-      tags: [],
-      tagText: '',
-      postButtonDisabled: false,
-      titleText: '',
-      messageBody: '',
       latestThreads: [],
       topThreads: []
     }
+  },
+  components: {
+    'new-thread-dialog': NewThreadDialog
   },
   created () {
     this.firebaseRef.threads.orderByChild('lastUpdated').limitToFirst(10)
@@ -166,172 +83,6 @@ export default {
       'firebaseRef',
       'userData'
     ])
-  },
-  methods: {
-    openDialog () {
-      this.dialogOpen = true
-    },
-    closeDialog () {
-      this.clearDialogData()
-      this.dialogOpen = false
-    },
-    onTitleFocus () {
-      if (this.tagText) {
-        this.tags.push(this.tagText)
-        this.tagText = ''
-        // Putting the focus back to the title because the DOM is re-rendered
-        this.$nextTick(() => {
-          this.$refs.title.$el.getElementsByTagName('input')[0].focus()
-        })
-      }
-    },
-    createThread () {
-      // disable button
-      this.postButtonDisabled = true
-
-      let rootRef = this.firebaseRef.threads.root
-      let updates = {}
-      let threadId = this.firebaseRef.threads.push().key
-      // Updating tags
-      let tagPromises = this.tags.map((tag) => {
-        return this.firebaseRef.tags.child(tag).push({threadId})
-      })
-      let currentTime = new Date()
-      // Updating thread
-      updates['threads/' + threadId] = {
-        title: this.titleText,
-        lastMessage: this.messageBody,
-        lastUpdated: currentTime,
-        createdAt: currentTime,
-        tags: this.tags,
-        stars: 0,
-        numReplies: 1,
-        userData: {
-          displayName: this.userData.displayName,
-          email: this.userData.email,
-          photoURL: this.userData.photoURL,
-          uid: this.userData.uid
-        }
-      }
-      // Updating messages
-      updates['messages/' + threadId] = [{
-        msgBody: this.messageBody,
-        timestamp: currentTime,
-        stars: 0,
-        userData: {
-          displayName: this.userData.displayName,
-          email: this.userData.email,
-          photoURL: this.userData.photoURL,
-          uid: this.userData.uid
-        }
-      }]
-      Promise.all([
-        ...tagPromises,
-        rootRef.update(updates)
-      ])
-      .then(() => {
-        // on success, enable the button
-        this.postButtonDisabled = false
-        this.showSnackbar('Successfully created the thread')
-        setTimeout(() => {
-          this.hideSnackbar()
-        }, 2000)
-        this.clearDialogData()
-      })
-      .catch(err => {
-        this.postButtonDisabled = false
-        this.showSnackbar(err)
-        this.clearDialogData()
-        console.error(err)
-      })
-
-      // closing the dialog
-      this.dialogOpen = false
-    },
-    hideSnackbar () {
-      this.snackbarOpen = false
-      this.snackbarText = ''
-    },
-    showSnackbar (msg) {
-      this.snackbarText = msg
-      this.snackbarOpen = true
-    },
-    clearDialogData () {
-      this.tags = []
-      this.titleText = ''
-      this.messageBody = ''
-    },
-    itemSelected () {
-      this.tags.push(this.tagText)
-      this.tagText = ''
-      this.putFocus()
-    },
-    onAutoCompleteChange () {
-      if (this.tagText.endsWith(' ')) {
-        this.tags.push(this.tagText.trim())
-        this.tagText = ''
-        this.putFocus()
-      }
-    },
-    // We need to apply focus after the dom has re-rendered
-    // Hence running it on nextTick
-    putFocus () {
-      this.$nextTick(() => {
-        // A hack for now
-        // Refer - https://github.com/museui/muse-ui/issues/495
-        this.$refs.autoComplete.$el.getElementsByTagName('input')[0].focus()
-      })
-    },
-    removeTag (tag) {
-      let index = this.tags.indexOf(tag)
-      this.tags.splice(index, 1)
-    },
-    signIn (company) {
-      let provider = null
-      if (company === 'google') {
-        provider = new firebase.auth.GoogleAuthProvider()
-      } else if (company === 'facebook') {
-        provider = new firebase.auth.FacebookAuthProvider()
-      } else if (company === 'github') {
-        provider = new firebase.auth.GithubAuthProvider()
-      }
-      firebase.auth().signInWithPopup(provider).then((result) => {
-        // The signed-in user info.
-        this.$store.commit('loginUser', result.user)
-      }).catch((error) => {
-        console.error(error)
-        this.showSnackbar(error.message)
-      })
-    }
   }
 }
 </script>
-
-<style lang="scss" scoped>
-$fabBtnMargin: 3rem;
-
-.addBtn {
-  position: fixed;
-  z-index: 5;
-  right: $fabBtnMargin;
-  bottom: $fabBtnMargin;
-}
-
-.autoComplete {
-  height: 4rem;
-}
-
-.signin-buttons {
-  width: 50%;
-  margin: 0 auto;
-}
-
-.login-button {
-  margin-bottom: 1rem;
-}
-
-.mu-text-field-line, .mu-text-field-focus-line {
-  position: relative;
-}
-</style>
-
