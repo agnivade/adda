@@ -127,13 +127,8 @@ export default {
       let rootRef = this.firebaseRef.threads.root
       let updates = {}
       let threadId = this.firebaseRef.threads.push().key
-      // Updating tags
-      let tagPromises = this.tags.map((tag) => {
-        return this.firebaseRef.tags.child(tag).push({threadId})
-      })
       let currentTime = new Date()
-      // Updating thread
-      updates['threads/' + threadId] = {
+      let threadBody = {
         title: this.titleText,
         lastMessage: this.messageBody,
         lastUpdated: currentTime,
@@ -148,6 +143,14 @@ export default {
           uid: this.userData.uid
         }
       }
+      let threadDict = {}
+      threadDict[threadId] = threadBody
+      // Updating tags
+      let tagPromises = this.tags.map((tag) => {
+        return this.firebaseRef.tags.child(tag).push(threadDict)
+      })
+      // Updating thread
+      updates['threads/' + threadId] = threadBody
       // Updating messages
       updates['messages/' + threadId] = [{
         msgBody: this.messageBody,

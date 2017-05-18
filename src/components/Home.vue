@@ -1,7 +1,5 @@
 <template>
   <div>
-    <h1>Welcome to adda !</h1>
-
     <mu-row gutter>
       <mu-col width="100" tablet="50" desktop="50">
         <mu-sub-header>Latest</mu-sub-header>

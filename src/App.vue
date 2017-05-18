@@ -42,9 +42,6 @@ export default {
   data () {
     return {
       drawerOpen: true,
-      leftTop: {horizontal: 'left', vertical: 'top'},
-      leftBottom: {horizontal: 'left', vertical: 'bottom'},
-      rightBottom: {horizontal: 'right', vertical: 'bottom'},
       rightTop: {horizontal: 'right', vertical: 'top'}
     }
   },
@@ -75,8 +72,11 @@ export default {
     signOut () {
       firebase.auth().signOut().then(() => {
       }).catch((error) => {
-        this.$store.commi('showSnackbar', error.message)
+        this.$store.commit('showSnackbar', error.message)
       })
+    },
+    hideSnackbar () {
+      this.$store.commit('hideSnackbar')
     }
   }
 }
@@ -95,7 +95,7 @@ $containerPadding: 6rem;
   position: fixed;
 }
 .empty-space {
-  height: 5rem;
+  height: 7rem;
 }
 .drawer {
   top:$appbarHeight;
