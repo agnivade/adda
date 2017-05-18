@@ -29,6 +29,7 @@
   <div class="data-container" :class="{ 'container-open': !drawerOpen }">
     <router-view></router-view>
   </div>
+  <mu-snackbar v-if="snackbarOpen" :message="snackbarText" action="OK" @actionClick="hideSnackbar" @close="hideSnackbar"/>
   </div>
 </template>
 
@@ -62,7 +63,9 @@ export default {
   computed: mapState([
     // maps this.<prop> to $store.state.<prop>
     'userLoggedIn',
-    'userData'
+    'userData',
+    'snackbarOpen',
+    'snackbarText'
   ]),
   methods: {
     toggleDrawer () {
@@ -70,9 +73,8 @@ export default {
     },
     signOut () {
       firebase.auth().signOut().then(() => {
-        // TODO: show snackbar
       }).catch((error) => {
-        console.error(error)
+        this.$store.commi('showSnackbar', error.message)
       })
     }
   }

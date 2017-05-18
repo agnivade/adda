@@ -7,7 +7,9 @@ export default new Vuex.Store({
   state: {
     userLoggedIn: false,
     userData: {},
-    firebaseRef: null
+    firebaseRef: null,
+    snackbarOpen: false,
+    snackbarText: ''
   },
   mutations: {
     loginUser (state, user) {
@@ -20,6 +22,14 @@ export default new Vuex.Store({
     },
     setFirebaseRef (state, ref) {
       state.firebaseRef = ref
+    },
+    hideSnackbar (state) {
+      state.snackbarOpen = false
+      state.snackbarText = ''
+    },
+    showSnackbar (state, msg) {
+      state.snackbarText = msg
+      state.snackbarOpen = true
     }
   }
 })

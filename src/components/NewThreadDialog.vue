@@ -75,9 +75,6 @@
 
   </mu-dialog>
   <mu-float-button secondary icon="add" class="addBtn" @click="openDialog" />
-
-  <!--TODO: Move this to the main page, storing the text in state -->
-  <mu-snackbar v-if="snackbarOpen" :message="snackbarText" action="OK" @actionClick="hideSnackbar" @close="hideSnackbar"/>
   </div>
 </template>
 
@@ -96,9 +93,7 @@ export default {
       tagText: '',
       postButtonDisabled: false,
       titleText: '',
-      messageBody: '',
-      snackbarOpen: false,
-      snackbarText: ''
+      messageBody: ''
     }
   },
   computed: mapState([
@@ -172,15 +167,15 @@ export default {
       .then(() => {
         // on success, enable the button
         this.postButtonDisabled = false
-        this.showSnackbar('Successfully created the thread')
+        this.$store.commit('showSnackbar', 'Successfully created the thread')
         setTimeout(() => {
-          this.hideSnackbar()
+          this.$store.commit('hideSnackbar')
         }, 2000)
         this.clearDialogData()
       })
       .catch(err => {
         this.postButtonDisabled = false
-        this.showSnackbar(err)
+        this.$store.commit('showSnackbar', err)
         this.clearDialogData()
         console.error(err)
       })
@@ -232,16 +227,8 @@ export default {
         this.$store.commit('loginUser', result.user)
       }).catch((error) => {
         console.error(error)
-        this.showSnackbar(error.message)
+        this.$store.commit('showSnackbar', error.message)
       })
-    },
-    hideSnackbar () {
-      this.snackbarOpen = false
-      this.snackbarText = ''
-    },
-    showSnackbar (msg) {
-      this.snackbarText = msg
-      this.snackbarOpen = true
     }
   }
 }
