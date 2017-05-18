@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-  <mu-appbar title="adda" class="appbar" :zDepth="2">
+  <mu-appbar :title="pageTitle" class="appbar" :zDepth="2">
     <mu-icon-button icon="menu" slot="left" @click="toggleDrawer" />
     <mu-avatar v-if="userLoggedIn" slot="right" :src="userData.photoURL" />
     <mu-avatar v-else slot="right" icon="account_circle"/>
@@ -65,7 +65,8 @@ export default {
     'userLoggedIn',
     'userData',
     'snackbarOpen',
-    'snackbarText'
+    'snackbarText',
+    'pageTitle'
   ]),
   methods: {
     toggleDrawer () {

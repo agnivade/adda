@@ -9,7 +9,8 @@ export default new Vuex.Store({
     userData: {},
     firebaseRef: null,
     snackbarOpen: false,
-    snackbarText: ''
+    snackbarText: '',
+    pageTitle: ''
   },
   mutations: {
     loginUser (state, user) {
@@ -28,8 +29,12 @@ export default new Vuex.Store({
       state.snackbarText = ''
     },
     showSnackbar (state, msg) {
-      state.snackbarText = msg
       state.snackbarOpen = true
+      state.snackbarText = msg
+    },
+    setPageTitle (state, title) {
+      state.pageTitle = 'adda - ' + title
+      document.title = state.pageTitle
     }
   }
 })

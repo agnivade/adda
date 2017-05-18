@@ -50,6 +50,9 @@ export default {
     'new-thread-dialog': NewThreadDialog
   },
   created () {
+    // Setting the page title
+    this.$store.commit('setPageTitle', 'Home')
+    // Getting data from firebase
     this.firebaseRef.threads.orderByChild('lastUpdated').limitToFirst(10)
     .on('child_added', (data) => {
       this.latestThreads.push({
