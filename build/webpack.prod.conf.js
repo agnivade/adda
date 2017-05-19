@@ -8,6 +8,7 @@ var CopyWebpackPlugin = require('copy-webpack-plugin')
 var HtmlWebpackPlugin = require('html-webpack-plugin')
 var ExtractTextPlugin = require('extract-text-webpack-plugin')
 var OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin')
+var SWPrecacheWebpackPlugin = require('sw-precache-webpack-plugin');
 
 var env = process.env.NODE_ENV === 'testing'
   ? require('../config/test.env')
@@ -86,6 +87,11 @@ var webpackConfig = merge(baseWebpackConfig, {
     new webpack.optimize.CommonsChunkPlugin({
       name: 'manifest',
       chunks: ['vendor']
+    }),
+    new SWPrecacheWebpackPlugin({
+      cacheId: 'adda',
+      mergeStaticsConfig: true, // if you don't set this to true, you won't see any webpack-emitted assets in your serviceworker config
+      staticFileGlobsIgnorePatterns: [/\.map$/], // use this to ignore sourcemap files
     }),
     // copy custom static assets
     new CopyWebpackPlugin([

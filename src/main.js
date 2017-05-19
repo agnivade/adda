@@ -23,6 +23,13 @@ Vue.use(Router)
 
 Vue.config.productionTip = false
 
+if (process.env.NODE_ENV === 'production') {
+  if ('serviceWorker' in navigator) {
+    console.log('registering service worker')
+    navigator.serviceWorker.register('/service-worker.js')
+  }
+}
+
 // Initializing firebase config
 const firebaseApp = firebase.initializeApp({
   apiKey: process.firebaseApiKey,
