@@ -15,12 +15,10 @@
   <mu-drawer class="drawer" :open="drawerOpen" :zDepth="0">
     <mu-list @itemClick="">
       <mu-list-item title="Home">
-        <mu-icon v-if="activeSection('adda - Home')" :color="highlightColor" slot="left" value="home" />
-        <mu-icon v-else slot="left" value="home"/>
+        <mu-icon slot="left" value="home"/>
       </mu-list-item>
       <mu-list-item title="Following">
-        <mu-icon v-if="activeSection('adda - Following')" :color="highlightColor" slot="left" value="turned_in"/>
-        <mu-icon v-else slot="left" value="turned_in"/>
+        <mu-icon slot="left" value="bookmark"/>
       </mu-list-item>
       <mu-divider />
       <mu-list-item title="General">
@@ -109,11 +107,24 @@ $containerPadding: 6rem;
 }
 .data-container {
   margin-left: $drawerWidth;
-  padding: 0 $containerPadding;
+  padding: 0rem;
   transition: margin-left 0.45s;
 }
+
 .container-open {
   margin-left: 0rem;
-  padding: 0 $containerPadding - 1;
+  padding: 0rem;
+}
+
+@media only screen and (min-width: 768px) {
+  .data-container {
+    margin-left: $drawerWidth;
+    padding: 0 $containerPadding;
+    transition: margin-left 0.45s;
+  }
+  .container-open {
+    margin-left: 0rem;
+    padding: 0 $containerPadding - 1;
+  }
 }
 </style>

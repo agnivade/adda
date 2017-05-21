@@ -5,11 +5,18 @@
         <mu-sub-header>Latest</mu-sub-header>
         <template v-if="showLatestThreads">
           <mu-content-block v-for="item in latestThreadsDesc" :key="item.id">
-            <mu-list-item :title="item.title">
+            <mu-list-item class="latest-threads" :title="item.title">
               <mu-avatar :src="item.userData.photoURL" slot="leftAvatar"/>
               <span slot="describe">
                 {{item.lastMessage}}
+                <br />
+                {{item.lastUpdated | parseDate}}
               </span>
+              <mu-badge class="badge" :content="formatTags(item.tags)" primary slot="right"/>
+              <mu-checkbox class="badge" slot="right"  uncheckIcon="bookmark_border" checkedIcon="bookmark" />
+              <mu-badge :content="item.numReplies.toString()" primary slot="right">
+                <mu-icon value="chat_bubble"/>
+              </mu-badge>
             </mu-list-item>
             <mu-divider />
           </mu-content-block>
@@ -24,11 +31,18 @@
         <mu-sub-header>Top</mu-sub-header>
         <template v-if="showTopThreads">
           <mu-content-block v-for="item in topThreadsDesc" :key="item.id">
-            <mu-list-item :title="item.title">
+            <mu-list-item class="top-threads" :title="item.title">
               <mu-avatar :src="item.userData.photoURL" slot="leftAvatar"/>
               <span slot="describe">
                 {{item.lastMessage}}
+                <br />
+                {{item.lastUpdated | parseDate}}
               </span>
+              <mu-badge class="badge" :content="formatTags(item.tags)" primary slot="right"/>
+              <mu-checkbox class="badge" slot="right"  uncheckIcon="bookmark_border" checkedIcon="bookmark" />
+              <mu-badge :content="item.numReplies.toString()" primary slot="right">
+                <mu-icon value="chat_bubble"/>
+              </mu-badge>
             </mu-list-item>
             <mu-divider />
           </mu-content-block>
@@ -47,6 +61,7 @@
 
 <script>
 import {mapState} from 'vuex'
+import moment from 'moment'
 
 import NewThreadDialog from './NewThreadDialog'
 
@@ -60,6 +75,11 @@ export default {
   },
   components: {
     'new-thread-dialog': NewThreadDialog
+  },
+  filters: {
+    parseDate (date) {
+      return moment(date).format('MMMM Do YYYY, h:mm:ss a')
+    }
   },
   created () {
     // Setting the page title
@@ -104,6 +124,20 @@ export default {
       'firebaseRef',
       'userData'
     ])
+  },
+  methods: {
+    formatTags (tags) {
+      return tags.join()
+    }
   }
 }
 </script>
+
+<style lang="scss">
+.badge {
+  margin-right: 1rem;
+}
+.latest-threads .mu-item-right, .top-threads .mu-item-right{
+  width: auto;
+}
+</style>
