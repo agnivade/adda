@@ -14,17 +14,23 @@
   </div>
   <mu-drawer class="drawer" :open="drawerOpen" :zDepth="0">
     <mu-list @itemClick="">
-      <mu-list-item title="Home">
+      <mu-list-item title="Home" to="/">
         <mu-icon slot="left" value="home"/>
       </mu-list-item>
-      <mu-list-item title="Following">
+      <mu-list-item title="Following" to="/following">
         <mu-icon slot="left" value="bookmark"/>
       </mu-list-item>
       <mu-divider />
-      <mu-list-item title="General">
+      <mu-list-item title="general" to="/filter/general">
         <mu-icon slot="left" value="label"/>
       </mu-list-item>
-    </mu-list>
+      <mu-list-item title="dev" to="/filter/dev">
+        <mu-icon slot="left" value="label"/>
+      </mu-list-item>
+      <mu-list-item title="sales" to="/filter/sales">
+        <mu-icon slot="left" value="label"/>
+      </mu-list-item>
+      </mu-list>
   </mu-drawer>
   <div class="data-container" :class="{ 'container-open': !drawerOpen }">
     <router-view></router-view>

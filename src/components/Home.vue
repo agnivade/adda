@@ -1,7 +1,7 @@
 <template>
   <div>
     <mu-row gutter>
-      <mu-col width="100" tablet="50" desktop="50">
+      <mu-col width="100" tablet="80" desktop="50">
         <mu-sub-header>Latest</mu-sub-header>
         <template v-if="showLatestThreads">
           <mu-content-block v-for="item in latestThreadsDesc" :key="item.id">
@@ -27,7 +27,7 @@
           </mu-content-block>
         </template>
       </mu-col>
-      <mu-col width="100" tablet="50" desktop="50">
+      <mu-col width="100" tablet="80" desktop="50">
         <mu-sub-header>Top</mu-sub-header>
         <template v-if="showTopThreads">
           <mu-content-block v-for="item in topThreadsDesc" :key="item.id">

@@ -16,16 +16,16 @@
     <!-- Add to homescreen for Chrome on Android -->
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="application-name" content="adda">
-    <link rel="icon" sizes="192x192" href="static/images/icons/icon-192x192.png">
+    <link rel="icon" sizes="192x192" href="/static/images/icons/icon-192x192.png">
 
     <!-- Add to homescreen for Safari on iOS -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="apple-mobile-web-app-title" content="adda: Discussions Redefined">
-    <link rel="apple-touch-icon" href="static/images/icons/icon-192x192.png">
+    <link rel="apple-touch-icon" href="/static/images/icons/icon-192x192.png">
 
     <!-- Tile icon for Win8 (144x144 + tile color) -->
-    <meta name="msapplication-TileImage" content="static/images/icons/icon-144x144.png">
+    <meta name="msapplication-TileImage" content="/static/images/icons/icon-144x144.png">
     <meta name="msapplication-TileColor" content="#474a4f">
 
     <!-- Color the status bar on mobile devices -->
@@ -39,9 +39,9 @@
         font-weight: 400;
         src: local('Material Icons'),
           local('MaterialIcons-Regular'),
-          url(static/iconfonts/MaterialIcons-Regular.woff2) format('woff2'),
-          url(static/iconfonts/MaterialIcons-Regular.woff) format('woff'),
-          url(static/iconfonts/MaterialIcons-Regular.ttf) format('truetype');
+          url(/static/iconfonts/MaterialIcons-Regular.woff2) format('woff2'),
+          url(/static/iconfonts/MaterialIcons-Regular.woff) format('woff'),
+          url(/static/iconfonts/MaterialIcons-Regular.ttf) format('truetype');
       }
       .material-icons {
         font-family: 'Material Icons';
@@ -60,10 +60,8 @@
         -webkit-font-smoothing: antialiased;
         /* Support for Safari and Chrome. */
         text-rendering: optimizeLegibility;
-
         /* Support for Firefox. */
         -moz-osx-font-smoothing: grayscale;
-
         /* Support for IE. */
         font-feature-settings: 'liga';
       }

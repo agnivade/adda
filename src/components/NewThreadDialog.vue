@@ -12,7 +12,7 @@
         inputClass="inputField"
         :dataSource="autoCompleteTags"
         :underlineShow="false"
-        v-model='tagText'
+        v-model="tagText"
         @focus="autoCompleteFocussed=true"
         @blur="autoCompleteFocussed=false"
         @select="itemSelected"
@@ -191,8 +191,9 @@ export default {
       this.titleText = ''
       this.messageBody = ''
     },
-    itemSelected () {
-      this.tags.push(this.tagText)
+    itemSelected (item) {
+      // Check for dupes
+      this.tags.push(item)
       this.tagText = ''
       this.putFocus()
     },
