@@ -15,10 +15,12 @@
   <mu-drawer class="drawer" :open="drawerOpen" :zDepth="0">
     <mu-list @itemClick="">
       <mu-list-item title="Home">
-        <mu-icon slot="left" value="home"/>
+        <mu-icon v-if="activeSection('adda - Home')" :color="highlightColor" slot="left" value="home" />
+        <mu-icon v-else slot="left" value="home"/>
       </mu-list-item>
       <mu-list-item title="Following">
-        <mu-icon slot="left" value="turned_in"/>
+        <mu-icon v-if="activeSection('adda - Following')" :color="highlightColor" slot="left" value="turned_in"/>
+        <mu-icon v-else slot="left" value="turned_in"/>
       </mu-list-item>
       <mu-divider />
       <mu-list-item title="General">
@@ -42,7 +44,8 @@ export default {
   data () {
     return {
       drawerOpen: true,
-      rightTop: {horizontal: 'right', vertical: 'top'}
+      rightTop: {horizontal: 'right', vertical: 'top'},
+      highlightColor: '#ff5252'
     }
   },
   created () {
@@ -66,6 +69,9 @@ export default {
     'pageTitle'
   ]),
   methods: {
+    activeSection (title) {
+      return this.pageTitle === title
+    },
     toggleDrawer () {
       this.drawerOpen = !this.drawerOpen
     },
