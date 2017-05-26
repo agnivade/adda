@@ -128,7 +128,7 @@ export default {
       let updates = {}
       let threadId = this.firebaseRef.threads.push().key
       let currentTime = new Date()
-      let threadBody = {
+      let threadMetadata = {
         title: this.titleText,
         lastMessage: this.messageBody,
         lastUpdated: currentTime,
@@ -143,16 +143,14 @@ export default {
           uid: this.userData.uid
         }
       }
-      let threadDict = {}
-      threadDict[threadId] = threadBody
       // Updating tags
-      let tagPromises = this.tags.map((tag) => {
-        return this.firebaseRef.tags.child(tag).push(threadDict)
+      this.tags.forEach((tag) => {
+        updates[`tags/${tag}/${threadId}`] = threadMetadata
       })
       // Updating thread
-      updates['threads/' + threadId] = threadBody
+      updates[`threads/${threadId}`] = threadMetadata
       // Updating messages
-      updates['messages/' + threadId] = [{
+      updates[`messages/${threadId}`] = [{
         msgBody: this.messageBody,
         timestamp: currentTime,
         stars: 0,
@@ -163,10 +161,8 @@ export default {
           uid: this.userData.uid
         }
       }]
-      Promise.all([
-        ...tagPromises,
-        rootRef.update(updates)
-      ])
+
+      rootRef.update(updates)
       .then(() => {
         // on success, enable the button
         this.postButtonDisabled = false
