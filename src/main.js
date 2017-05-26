@@ -23,6 +23,8 @@ Vue.use(Router)
 
 Vue.config.productionTip = false
 
+// Registering the service worker if this is a prod build
+// No need to register in dev mode because that the sw will need to reload everytime
 if (process.env.NODE_ENV === 'production') {
   if ('serviceWorker' in navigator) {
     console.log('registering service worker')

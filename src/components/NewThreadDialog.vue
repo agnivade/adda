@@ -1,10 +1,12 @@
 <template>
   <div>
 	<mu-dialog :open="dialogOpen" title="New Thread" @close="dialogOpen=false">
+    <!-- If logged in, show the text boxes -->
     <template v-if="userLoggedIn">
       <mu-chip v-for="tag in tags" :key="tag" showDelete @delete="removeTag(tag)">
         {{tag}}
       </mu-chip>
+      <!-- Textbox to add tags -->
       <mu-auto-complete
         ref="autoComplete"
         class="autoComplete"
@@ -18,6 +20,7 @@
         @select="itemSelected"
         @input="onAutoCompleteChange"
       />
+      <!-- The underline effect -->
       <hr class="mu-text-field-line">
       <hr class="mu-text-field-focus-line" :class="{'focus' : autoCompleteFocussed}">
       <mu-text-field
@@ -39,6 +42,7 @@
       <mu-flat-button slot="actions" :style="{marginRight: '1rem'}" label="Cancel" @click="closeDialog" />
       <mu-raised-button slot="actions" primary label="Post" @click="createThread" :disabled="postButtonDisabled" />
     </template>
+    <!-- If not logged in, show login buttons -->
     <template v-else>
       <div class="signin-buttons">
       <mu-raised-button
@@ -110,6 +114,7 @@ export default {
       this.clearDialogData()
       this.dialogOpen = false
     },
+    // when the user presses tab from the autocomplete text, the remaining text should get added to the tag array
     onTitleFocus () {
       if (this.tagText) {
         this.tags.push(this.tagText)
@@ -126,8 +131,10 @@ export default {
 
       let rootRef = this.firebaseRef.threads.root
       let updates = {}
+      // getting the thread id
       let threadId = this.firebaseRef.threads.push().key
       let currentTime = new Date()
+      // creating a thread metadata object
       let threadMetadata = {
         title: this.titleText,
         lastMessage: this.messageBody,
@@ -162,6 +169,7 @@ export default {
         }
       }]
 
+      // updating to firebase
       rootRef.update(updates)
       .then(() => {
         // on success, enable the button
@@ -182,6 +190,7 @@ export default {
       // closing the dialog
       this.dialogOpen = false
     },
+    // clear the text fields after the post is done
     clearDialogData () {
       this.tags = []
       this.titleText = ''
@@ -209,6 +218,7 @@ export default {
         this.$refs.autoComplete.$el.getElementsByTagName('input')[0].focus()
       })
     },
+    // remove the tag from the array
     removeTag (tag) {
       let index = this.tags.indexOf(tag)
       this.tags.splice(index, 1)

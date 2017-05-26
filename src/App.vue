@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+  <!-- Main app bar-->
   <mu-appbar :title="pageTitle" class="appbar" :zDepth="2">
     <mu-icon-button icon="menu" slot="left" @click="toggleDrawer" />
     <mu-avatar v-if="userLoggedIn" slot="right" :src="userData.photoURL" />
@@ -10,8 +11,10 @@
       <mu-menu-item title="Sign out" @click="signOut" />
     </mu-icon-menu>
   </mu-appbar>
+  <!-- An empty space to counter for the gap in html left by app bar-->
   <div class="empty-space">
   </div>
+  <!-- The left drawer -->
   <mu-drawer class="drawer" :open="drawerOpen" :zDepth="0">
     <mu-list @itemClick="">
       <mu-list-item title="Home" to="/">
@@ -35,6 +38,7 @@
   <div class="data-container" :class="{ 'container-open': !drawerOpen }">
     <router-view></router-view>
   </div>
+  <!-- Snackbar is used to show notifications to the user -->
   <mu-snackbar v-if="snackbarOpen" :message="snackbarText" action="OK" @actionClick="hideSnackbar" @close="hideSnackbar"/>
   </div>
 </template>
@@ -73,9 +77,7 @@ export default {
     'pageTitle'
   ]),
   methods: {
-    activeSection (title) {
-      return this.pageTitle === title
-    },
+    // toggles the drawer state
     toggleDrawer () {
       this.drawerOpen = !this.drawerOpen
     },

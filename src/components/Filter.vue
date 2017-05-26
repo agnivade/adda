@@ -2,9 +2,11 @@
   <div>
     <mu-row gutter>
     <mu-content-block>
+      <!-- Tags as chips -->
       <mu-chip v-for="tag in tags" :key="tag" showDelete @delete="removeTag(tag)">
       {{tag}}
       </mu-chip>
+      <!-- Textbox to add tags -->
       <mu-auto-complete
         ref="autoComplete"
         class="autoComplete"
@@ -18,6 +20,7 @@
         @input="onAutoCompleteChange"
         v-model="tagText"
       />
+      <!-- The underline effect -->
       <hr class="mu-text-field-line">
       <hr class="mu-text-field-focus-line" :class="{'focus' : autoCompleteFocussed}">
 
@@ -108,14 +111,21 @@ export default {
   methods: {
     itemSelected (item) {
       // Check for dupes
+      // Append to the list
       this.tags.push(item)
+      // Setting tag text to empty
       this.tagText = ''
+      // Putting the focus back to the auto complete again
       this.putFocus()
     },
     onAutoCompleteChange () {
+      // Only do this if a space is pressed
       if (this.tagText.endsWith(' ')) {
+        // Append to the list
         this.tags.push(this.tagText.trim())
+        // Setting tag text to empty
         this.tagText = ''
+        // Putting the focus back to the auto complete again
         this.putFocus()
       }
     },
@@ -132,26 +142,34 @@ export default {
       let index = this.tags.indexOf(tag)
       this.tags.splice(index, 1)
     },
+    // Displays the tag array in a comma separated string
     formatTags (tags) {
       return tags.join()
     },
+    // Get the tag array and do a firebase query again to re-filter the threads
     updateThreads () {
       this.filteredThreads = []
       this.loadingState = true
 
+      // Getting a list of promises from firebase refs
       let tagPromises = this.tags.map((tag) => {
         return this.firebaseRef.tags.child(tag).once('value')
       })
 
+      // Executing all the promises
       Promise.all(tagPromises)
       .then((responses) => {
         this.loadingState = false
+        // Temporary dict to hold the threads
         let tmpFilteredThreads = {}
+        // Going through the response list
         for (const snapshot of responses) {
           let threads = snapshot.val()
           if (!threads) {
             return
           }
+          // Each object under a tag is a dictionary of thread metadata
+          // So storing them in a dict first, to get rid of duplicate threads coming from multiple tags
           Object.keys(threads).forEach((threadId) => {
             tmpFilteredThreads[threadId] = threads[threadId]
           })
@@ -169,6 +187,7 @@ export default {
         console.error(err)
       })
 
+      // If there are no tags, then don't forget to state loadingState to false
       if (this.tags.length === 0) {
         this.loadingState = false
       }

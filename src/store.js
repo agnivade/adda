@@ -13,6 +13,7 @@ export default new Vuex.Store({
     pageTitle: ''
   },
   mutations: {
+    // use login, logout functions
     loginUser (state, user) {
       state.userLoggedIn = true
       state.userData = user
@@ -21,9 +22,11 @@ export default new Vuex.Store({
       state.userLoggedIn = false
       state.userData = {}
     },
+    // setting the firebase ref
     setFirebaseRef (state, ref) {
       state.firebaseRef = ref
     },
+    // snackbar hide/show
     hideSnackbar (state) {
       state.snackbarOpen = false
       state.snackbarText = ''
@@ -32,6 +35,7 @@ export default new Vuex.Store({
       state.snackbarOpen = true
       state.snackbarText = msg
     },
+    // setting the page title depending on what component is loaded
     setPageTitle (state, title) {
       state.pageTitle = 'adda - ' + title
       document.title = state.pageTitle

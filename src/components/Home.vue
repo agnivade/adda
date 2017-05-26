@@ -2,6 +2,7 @@
   <div>
     <mu-row gutter>
       <mu-col width="100" tablet="80" desktop="50">
+        <!-- Latest threads secton -->
         <mu-sub-header>Latest</mu-sub-header>
         <template v-if="showLatestThreads">
           <mu-content-block v-for="item in latestThreadsDesc" :key="item.id">
@@ -28,6 +29,7 @@
         </template>
       </mu-col>
       <mu-col width="100" tablet="80" desktop="50">
+        <!-- Top threads secton -->
         <mu-sub-header>Top</mu-sub-header>
         <template v-if="showTopThreads">
           <mu-content-block v-for="item in topThreadsDesc" :key="item.id">
@@ -84,7 +86,8 @@ export default {
   created () {
     // Setting the page title
     this.$store.commit('setPageTitle', 'Home')
-    // Getting data from firebase
+    // Getting the threads sorted by lastUpdated and stars
+    // and populating the data model
     this.firebaseRef.threads.orderByChild('lastUpdated').limitToFirst(10)
     .on('child_added', (data) => {
       this.latestThreads.push({
@@ -102,12 +105,14 @@ export default {
     })
   },
   computed: {
+    // Show the loading gif if the data model is not yet populated
     showLatestThreads () {
       return this.latestThreads.length !== 0
     },
     showTopThreads () {
       return this.topThreads.length !== 0
     },
+    // computed property to reverse the list, because firebase only orders by asc
     latestThreadsDesc () {
       return this.latestThreads.reverse()
     },
@@ -115,7 +120,7 @@ export default {
       // Also sorting by numReplies
       return this.topThreads.sort((a, b) => {
         return a['numReplies'] > b['numReplies']
-      })
+      }) // and then reversing
       .reverse()
     },
     ...mapState([
@@ -126,6 +131,7 @@ export default {
     ])
   },
   methods: {
+    // Displays the tag array in a comma separated string
     formatTags (tags) {
       return tags.join()
     }
