@@ -14,7 +14,14 @@
                 {{item.lastUpdated | parseDate}}
               </span>
               <mu-badge class="badge" :content="formatTags(item.tags)" primary slot="right"/>
-              <mu-checkbox class="badge" slot="right"  uncheckIcon="bookmark_border" checkedIcon="bookmark" />
+              <mu-checkbox
+                class="badge"
+                slot="right"
+                uncheckIcon="bookmark_border"
+                checkedIcon="bookmark"
+                v-model="followingThreads[item.id]"
+                @change="onCheckboxChange(item.id, $event)"
+              />
               <mu-badge :content="item.numReplies.toString()" primary slot="right">
                 <mu-icon value="chat_bubble"/>
               </mu-badge>
@@ -41,7 +48,14 @@
                 {{item.lastUpdated | parseDate}}
               </span>
               <mu-badge class="badge" :content="formatTags(item.tags)" primary slot="right"/>
-              <mu-checkbox class="badge" slot="right"  uncheckIcon="bookmark_border" checkedIcon="bookmark" />
+              <mu-checkbox
+                class="badge"
+                slot="right"
+                uncheckIcon="bookmark_border"
+                checkedIcon="bookmark"
+                v-model="followingThreads[item.id]"
+                @change="onCheckboxChange(item.id, $event)"
+              />
               <mu-badge :content="item.numReplies.toString()" primary slot="right">
                 <mu-icon value="chat_bubble"/>
               </mu-badge>
@@ -127,13 +141,35 @@ export default {
       // maps this.<prop> to $store.state.<prop>
       'userLoggedIn',
       'firebaseRef',
-      'userData'
+      'userData',
+      'followingThreads'
     ])
   },
   methods: {
     // Displays the tag array in a comma separated string
     formatTags (tags) {
       return tags.join()
+    },
+    onCheckboxChange (threadId, state) {
+      // update firebase with the state
+      // update the dict in firebase
+      // /users/userId/following/{threadId: true}
+      // TODO: actually remove the key when state === false
+      let updates = {}
+      updates[threadId] = state
+      this.firebaseRef.user.child(`${this.userData.uid}/following`)
+      .update(updates)
+      .then(() => {
+        const statusMsg = state ? 'Following the thread' : 'Unfollowed the thread'
+        this.$store.commit('showSnackbar', statusMsg)
+        setTimeout(() => {
+          this.$store.commit('hideSnackbar')
+        }, 2000)
+      })
+      .catch((error) => {
+        console.error(error)
+        this.$store.commit('showSnackbar', error.message)
+      })
     }
   }
 }

@@ -7,6 +7,7 @@ export default new Vuex.Store({
   state: {
     userLoggedIn: false,
     userData: {},
+    followingThreads: {},
     firebaseRef: null,
     snackbarOpen: false,
     snackbarText: '',
@@ -21,6 +22,10 @@ export default new Vuex.Store({
     logoutUser (state) {
       state.userLoggedIn = false
       state.userData = {}
+    },
+    // populating the following dict
+    setFollowingThreads (state, threads) {
+      state.followingThreads = threads
     },
     // setting the firebase ref
     setFirebaseRef (state, ref) {

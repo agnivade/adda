@@ -62,6 +62,15 @@ export default {
       if (user) {
         // User is signed in.
         this.$store.commit('loginUser', user)
+        // get the list of following threads and put it in store
+        this.firebaseRef.user.child(`${user.uid}/following`)
+        .on('value', (snapshot) => {
+          let following = snapshot.val()
+          if (!following) {
+            return
+          }
+          this.$store.commit('setFollowingThreads', following)
+        })
       } else {
         // User is signed out.
         this.$store.commit('logoutUser')
@@ -73,6 +82,7 @@ export default {
     'userLoggedIn',
     'userData',
     'snackbarOpen',
+    'firebaseRef',
     'snackbarText',
     'pageTitle'
   ]),

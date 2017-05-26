@@ -44,7 +44,8 @@ const db = firebaseApp.database()
 let firebaseRef = {
   tags: db.ref('tags'),
   threads: db.ref('threads'),
-  messages: db.ref('messages')
+  messages: db.ref('messages'),
+  user: db.ref('users')
 }
 // Storing the firebaseRefs inside the store
 store.commit('setFirebaseRef', firebaseRef)
