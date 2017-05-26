@@ -197,14 +197,19 @@ export default {
       this.messageBody = ''
     },
     itemSelected (item) {
-      // Check for dupes
-      this.tags.push(item)
+      // Append to the list only if not already present
+      if (!this.tags.includes(item)) {
+        this.tags.push(item)
+      }
       this.tagText = ''
       this.putFocus()
     },
     onAutoCompleteChange () {
       if (this.tagText.endsWith(' ')) {
-        this.tags.push(this.tagText.trim())
+        // Append to the list only if not already present
+        if (!this.tags.includes(this.tagText.trim())) {
+          this.tags.push(this.tagText.trim())
+        }
         this.tagText = ''
         this.putFocus()
       }

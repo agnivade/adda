@@ -110,9 +110,10 @@ export default {
   ]),
   methods: {
     itemSelected (item) {
-      // Check for dupes
-      // Append to the list
-      this.tags.push(item)
+      // Append to the list only if not already present
+      if (!this.tags.includes(item)) {
+        this.tags.push(item)
+      }
       // Setting tag text to empty
       this.tagText = ''
       // Putting the focus back to the auto complete again
@@ -121,8 +122,10 @@ export default {
     onAutoCompleteChange () {
       // Only do this if a space is pressed
       if (this.tagText.endsWith(' ')) {
-        // Append to the list
-        this.tags.push(this.tagText.trim())
+        // Append to the list only if not already present
+        if (!this.tags.includes(this.tagText.trim())) {
+          this.tags.push(this.tagText.trim())
+        }
         // Setting tag text to empty
         this.tagText = ''
         // Putting the focus back to the auto complete again
@@ -159,6 +162,7 @@ export default {
       // Executing all the promises
       Promise.all(tagPromises)
       .then((responses) => {
+        // Setting loadingState to false once the response has come back
         this.loadingState = false
         // Temporary dict to hold the threads
         let tmpFilteredThreads = {}
@@ -166,13 +170,11 @@ export default {
         for (const snapshot of responses) {
           let threads = snapshot.val()
           if (!threads) {
-            return
+            continue
           }
           // Each object under a tag is a dictionary of thread metadata
-          // So storing them in a dict first, to get rid of duplicate threads coming from multiple tags
-          Object.keys(threads).forEach((threadId) => {
-            tmpFilteredThreads[threadId] = threads[threadId]
-          })
+          // So merging all of them into a single dict, to get rid of duplicate threads coming from multiple tags
+          Object.assign(tmpFilteredThreads, threads)
         }
         // flattening them and pushing to filteredThreads list
         Object.keys(tmpFilteredThreads).forEach((threadId) => {
