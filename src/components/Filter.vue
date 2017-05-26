@@ -138,23 +138,35 @@ export default {
     updateThreads () {
       this.filteredThreads = []
       this.loadingState = true
-      this.tags.forEach((tag) => {
-        this.firebaseRef.tags.child(tag).once('value')
-        .then((snapshot) => {
-          this.loadingState = false
-          let tagId = snapshot.val()
-          if (!tagId) {
+
+      let tagPromises = this.tags.map((tag) => {
+        return this.firebaseRef.tags.child(tag).once('value')
+      })
+
+      Promise.all(tagPromises)
+      .then((responses) => {
+        this.loadingState = false
+        let tmpFilteredThreads = {}
+        for (const snapshot of responses) {
+          let threads = snapshot.val()
+          if (!threads) {
             return
           }
-          Object.values(tagId).forEach((val) => {
-            Object.keys(val).forEach((threadId) => {
-              this.filteredThreads.push({
-                id: threadId,
-                ...val[threadId]
-              })
-            })
+          Object.keys(threads).forEach((threadId) => {
+            tmpFilteredThreads[threadId] = threads[threadId]
+          })
+        }
+        // flattening them and pushing to filteredThreads list
+        Object.keys(tmpFilteredThreads).forEach((threadId) => {
+          this.filteredThreads.push({
+            id: threadId,
+            ...tmpFilteredThreads[threadId]
           })
         })
+      })
+      .catch(err => {
+        this.$store.commit('showSnackbar', err)
+        console.error(err)
       })
 
       if (this.tags.length === 0) {
