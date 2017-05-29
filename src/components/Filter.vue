@@ -42,8 +42,20 @@
               <br />
               {{item.lastUpdated | parseDate}}
             </span>
-            <mu-badge class="badge" :content="formatTags(item.tags)" primary slot="right"/>
-            <mu-checkbox class="badge" slot="right"  uncheckIcon="bookmark_border" checkedIcon="bookmark" />
+            <mu-badge
+              class="badge"
+              :content="formatTags(item.tags)"
+              primary
+              slot="right"
+            />
+            <mu-checkbox
+              class="badge"
+              slot="right"
+              uncheckIcon="bookmark_border"
+              checkedIcon="bookmark"
+              v-model="followingThreads[item.id]"
+              @change="onCheckboxChange(item.id, $event)"
+            />
             <mu-badge :content="item.numReplies.toString()" primary slot="right">
               <mu-icon value="chat_bubble"/>
             </mu-badge>
@@ -106,7 +118,8 @@ export default {
     // maps this.<prop> to $store.state.<prop>
     'userLoggedIn',
     'firebaseRef',
-    'userData'
+    'userData',
+    'followingThreads'
   ]),
   methods: {
     itemSelected (item) {
@@ -131,6 +144,27 @@ export default {
         // Putting the focus back to the auto complete again
         this.putFocus()
       }
+    },
+    onCheckboxChange (threadId, state) {
+      // update firebase with the state
+      // update the dict in firebase
+      // /users/userId/following/{threadId: true}
+      // TODO: actually remove the key when state === false
+      let updates = {}
+      updates[threadId] = state
+      this.firebaseRef.user.child(`${this.userData.uid}/following`)
+      .update(updates)
+      .then(() => {
+        const statusMsg = state ? 'Following the thread' : 'Unfollowed the thread'
+        this.$store.commit('showSnackbar', statusMsg)
+        setTimeout(() => {
+          this.$store.commit('hideSnackbar')
+        }, 2000)
+      })
+      .catch((error) => {
+        console.error(error)
+        this.$store.commit('showSnackbar', error.message)
+      })
     },
     // We need to apply focus after the dom has re-rendered
     // Hence running it on nextTick
@@ -185,7 +219,7 @@ export default {
         })
       })
       .catch(err => {
-        this.$store.commit('showSnackbar', err)
+        this.$store.commit('showSnackbar', err.message)
         console.error(err)
       })
 
