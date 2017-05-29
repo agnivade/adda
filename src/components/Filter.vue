@@ -12,7 +12,7 @@
         class="autoComplete"
         hintText="Tags"
         inputClass="inputField"
-        :dataSource="autoCompleteTags"
+        :dataSource="tagSet"
         :underlineShow="false"
         @focus="autoCompleteFocussed=true"
         @blur="autoCompleteFocussed=false"
@@ -43,10 +43,13 @@
               {{item.lastUpdated | parseDate}}
             </span>
             <mu-badge
+              v-for="tag in item.tags"
               class="badge"
-              :content="formatTags(item.tags)"
+              :content="tag"
+              :key="tag"
               primary
               slot="right"
+              :color="tagColorMap[tag]"
             />
             <mu-checkbox
               class="badge"
@@ -82,7 +85,6 @@ export default {
     return {
       tags: [],
       autoCompleteFocussed: false,
-      autoCompleteTags: ['general', 'dev', 'sales', 'ops'],
       loadingState: true,
       tagText: '',
       filteredThreads: []
@@ -119,7 +121,9 @@ export default {
     'userLoggedIn',
     'firebaseRef',
     'userData',
-    'followingThreads'
+    'followingThreads',
+    'tagSet',
+    'tagColorMap'
   ]),
   methods: {
     itemSelected (item) {

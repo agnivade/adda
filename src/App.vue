@@ -24,14 +24,13 @@
         <mu-icon slot="left" value="bookmark"/>
       </mu-list-item>
       <mu-divider />
-      <mu-list-item title="general" to="/filter/general">
-        <mu-icon slot="left" value="label"/>
-      </mu-list-item>
-      <mu-list-item title="dev" to="/filter/dev">
-        <mu-icon slot="left" value="label"/>
-      </mu-list-item>
-      <mu-list-item title="sales" to="/filter/sales">
-        <mu-icon slot="left" value="label"/>
+
+      <mu-list-item
+        v-for="tag in tagSet"
+        :key="tag"
+        :title="tag"
+        :to="filterUrl(tag)">
+        <mu-icon slot="left" value="label" :color="tagColorMap[tag]"/>
       </mu-list-item>
       </mu-list>
   </mu-drawer>
@@ -84,12 +83,17 @@ export default {
     'snackbarOpen',
     'firebaseRef',
     'snackbarText',
-    'pageTitle'
+    'pageTitle',
+    'tagColorMap',
+    'tagSet'
   ]),
   methods: {
     // toggles the drawer state
     toggleDrawer () {
       this.drawerOpen = !this.drawerOpen
+    },
+    filterUrl (tag) {
+      return '/filter/' + tag
     },
     signOut () {
       firebase.auth().signOut().then(() => {

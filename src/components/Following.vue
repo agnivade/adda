@@ -19,10 +19,13 @@
               {{item.lastUpdated | parseDate}}
             </span>
             <mu-badge
+              v-for="tag in item.tags"
               class="badge"
-              :content="formatTags(item.tags)"
+              :content="tag"
+              :key="tag"
               primary
               slot="right"
+              :color="tagColorMap[tag]"
             />
             <mu-checkbox
               class="badge"
@@ -78,7 +81,8 @@ export default {
     'userLoggedIn',
     'firebaseRef',
     'userData',
-    'followingThreads'
+    'followingThreads',
+    'tagColorMap'
   ]),
   watch: {
     followingThreads (threads) {

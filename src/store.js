@@ -11,7 +11,15 @@ export default new Vuex.Store({
     firebaseRef: null,
     snackbarOpen: false,
     snackbarText: '',
-    pageTitle: ''
+    pageTitle: '',
+    tagColorMap: {
+      general: '#3E2723',
+      dev: '#311B92',
+      sales: '#0D47A1',
+      ops: '#004D40',
+      support: '#00B8D4'
+    },
+    tagSet: ['general', 'dev', 'sales', 'ops', 'support']
   },
   mutations: {
     // use login, logout functions

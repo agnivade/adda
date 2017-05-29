@@ -3,7 +3,14 @@
 	<mu-dialog :open="dialogOpen" title="New Thread" @close="dialogOpen=false">
     <!-- If logged in, show the text boxes -->
     <template v-if="userLoggedIn">
-      <mu-chip v-for="tag in tags" :key="tag" showDelete @delete="removeTag(tag)">
+      <mu-chip
+        v-for="tag in tags"
+        :key="tag"
+        showDelete
+        color="white"
+        :backgroundColor="tagColorMap[tag]"
+        @delete="removeTag(tag)"
+      >
         {{tag}}
       </mu-chip>
       <!-- Textbox to add tags -->
@@ -12,7 +19,7 @@
         class="autoComplete"
         hintText="Tags"
         inputClass="inputField"
-        :dataSource="autoCompleteTags"
+        :dataSource="tagSet"
         :underlineShow="false"
         v-model="tagText"
         @focus="autoCompleteFocussed=true"
@@ -92,7 +99,6 @@ export default {
     return {
       dialogOpen: false,
       autoCompleteFocussed: false,
-      autoCompleteTags: ['general', 'dev', 'sales', 'ops'],
       tags: [],
       tagText: '',
       postButtonDisabled: false,
@@ -104,7 +110,9 @@ export default {
     // maps this.<prop> to $store.state.<prop>
     'userLoggedIn',
     'firebaseRef',
-    'userData'
+    'userData',
+    'tagSet',
+    'tagColorMap'
   ]),
   methods: {
     openDialog () {

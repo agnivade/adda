@@ -13,7 +13,15 @@
                 <br />
                 {{item.lastUpdated | parseDate}}
               </span>
-              <mu-badge class="badge" :content="formatTags(item.tags)" primary slot="right"/>
+              <mu-badge
+                v-for="tag in item.tags"
+                class="badge"
+                :content="tag"
+                :key="tag"
+                primary
+                slot="right"
+                :color="tagColorMap[tag]"
+              />
               <mu-checkbox
                 class="badge"
                 slot="right"
@@ -47,7 +55,15 @@
                 <br />
                 {{item.lastUpdated | parseDate}}
               </span>
-              <mu-badge class="badge" :content="formatTags(item.tags)" primary slot="right"/>
+              <mu-badge
+                v-for="tag in item.tags"
+                class="badge"
+                :content="tag"
+                :key="tag"
+                primary
+                slot="right"
+                :color="tagColorMap[tag]"
+              />
               <mu-checkbox
                 class="badge"
                 slot="right"
@@ -142,7 +158,8 @@ export default {
       'userLoggedIn',
       'firebaseRef',
       'userData',
-      'followingThreads'
+      'followingThreads',
+      'tagColorMap'
     ])
   },
   methods: {
