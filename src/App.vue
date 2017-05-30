@@ -109,9 +109,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-$drawerWidth: 20rem;
-$appbarHeight: 64px;
-$containerPadding: 6rem;
+@import "scss/variables";
 
 #app {
   -webkit-font-smoothing: antialiased;

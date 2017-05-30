@@ -258,7 +258,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-$fabBtnMargin: 3rem;
+@import "../scss/variables";
 
 .addBtn {
   position: fixed;
