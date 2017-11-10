@@ -1,0 +1,88 @@
+{
+  "name": "agnivade/adda",
+  "version": "0.1.4",
+  "libraries": {
+    "xv": "^1.1.25"
+  },
+  "title": "adda",
+  "branch": "",
+  "style": {
+    "name": "Swiss",
+    "componentSet": {
+      "nav": "nav/BasicNav",
+      "header": "header/SwissHeader",
+      "article": "article/SwissArticle",
+      "footer": "footer/BasicFooter"
+    },
+    "fontFamily": "\"Helvetica Neue\", Helvetica, Arial, sans-serif",
+    "heading": {
+      "fontWeight": 700,
+      "letterSpacing": "-0.01em"
+    },
+    "layout": {
+      "fluid": true
+    },
+    "colors": {
+      "text": "#000",
+      "background": "#fff",
+      "primary": "#05a",
+      "secondary": "#444",
+      "highlight": "#f30",
+      "border": "#ccc",
+      "muted": "#eee"
+    }
+  },
+  "content": [
+    {
+      "component": "nav",
+      "links": [
+        {
+          "href": "https://github.com/agnivade/adda",
+          "text": "GitHub"
+        },
+        {
+          "href": "https://npmjs.com/package/adda",
+          "text": "npm"
+        }
+      ]
+    },
+    {
+      "component": "header",
+      "heading": "adda",
+      "subhead": "Forum software - Full client side. Offline capable. :electric_plug: Elegant. :sparkles:",
+      "children": [
+        {
+          "component": "ui/TweetButton",
+          "text": "adda: Forum software - Full client side. Offline capable. :electric_plug: Elegant. :sparkles:",
+          "url": ""
+        },
+        {
+          "component": "ui/GithubButton",
+          "user": "agnivade",
+          "repo": "adda"
+        }
+      ],
+      "text": "v1.0.0"
+    },
+    {
+      "component": "article",
+      "metadata": {
+        "source": "github.readme"
+      },
+      "html": "\n<blockquote>\n<p>A forum built on vuejs</p>\n</blockquote>\n<h2>Build Setup</h2>\n<pre><span class=\"hljs-comment\"># install dependencies</span>\nnpm install\n\n<span class=\"hljs-comment\"># serve with hot reload at localhost:8080</span>\nnpm run dev\n\n<span class=\"hljs-comment\"># build for production with minification</span>\nnpm run build\n\n<span class=\"hljs-comment\"># build for production and view the bundle analyzer report</span>\nnpm run build --report\n\n<span class=\"hljs-comment\"># run unit tests</span>\nnpm run unit\n\n<span class=\"hljs-comment\"># run all tests</span>\nnpm <span class=\"hljs-built_in\">test</span></pre><p>For detailed explanation on how things work, checkout the <a href=\"http://vuejs-templates.github.io/webpack/\">guide</a> and <a href=\"http://vuejs.github.io/vue-loader\">docs for vue-loader</a>.</p>\n"
+    },
+    {
+      "component": "footer",
+      "links": [
+        {
+          "href": "https://github.com/agnivade/adda",
+          "text": "GitHub"
+        },
+        {
+          "href": "https://github.com/agnivade",
+          "text": "agnivade"
+        }
+      ]
+    }
+  ]
+}
